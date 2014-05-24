@@ -1,4 +1,10 @@
-var app = angular.module('app', []);
+var app = angular.module('app', [
+	'ngCookies',
+	'ngResource',
+	'ngSanitize',
+	'ngRoute',
+	'angularjs.media.directives'
+]);
 
 app.directive('contestant', function(socket) {
 	var linker = function(scope, element, attrs) {
@@ -62,8 +68,43 @@ app.factory('socket', function($rootScope) {
 	};
 });
 
+app.config(function ($routeProvider, $locationProvider, $httpProvider) {
+  $locationProvider.hashPrefix('!');
+  $routeProvider
+    .when('/startup', {
+      templateUrl: 'views/Startup.html'
+    })
+    .otherwise({
+      redirectTo: '/'
+    });
+
+    $locationProvider.html5Mode(true);
+    
+    // Intercept 401s and redirect you to login
+    /*$httpProvider.interceptors.push(['$q', '$location', function($q, $location) {
+      return {
+        'responseError': function(response) {
+          if(response.status === 401) {
+            $location.path('/login');
+            return $q.reject(response);
+          }
+          else {
+            return $q.reject(response);
+          }
+        }
+      };
+    }]);*/
+});
+
+app.controller('navbarCtrl', function($scope, $location) {
+  $scope.isActive = function(path) {
+    return $location.path() === path;
+  };
+});
+
 app.controller('MainCtrl', function($scope, socket) {
 	$scope.contestants = [];
+	$scope.score;
 
   socket.emit('listContestants');
 
@@ -87,12 +128,22 @@ app.controller('MainCtrl', function($scope, socket) {
 									  .addClass("ng-pristine");
 	};
 
+	socket.on('score', function(data) {
+		console.log(data);
+		$scope.score = data;
+	});
+
 	// Outgoing
-	$scope.createContestant = function(display_name, score) {
+	$scope.createContestant = function() {
+
+		$scope.$digest;
+
+		//console.log($scope.score[0]);
+
 		var contestant = {
 			id: new Date().getTime(),
-			display_name: display_name,
-			score: Number(score)
+			display_name: "Bob",
+			score: $scope.score
 		};
 
 		$scope.contestants.push(contestant);
