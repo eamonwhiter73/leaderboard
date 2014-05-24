@@ -5,12 +5,63 @@
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
+    <link rel="stylesheet" type="text/css" href="views/history/history.css" />
+    <script type="text/javascript" src="views/history/history.js"></script>
+    <!-- END Browser History required section -->  
+        
+    <script type="text/javascript" src="views/swfobject.js"></script>
+
     <link href="/css/app.css" rel="stylesheet">
 
     <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io.connect('http://localhost');
+        socket.on('data', function (data) {
+            console.log(data);
+        });
+    </script>
 
+    <script type="text/javascript">
+            // For version detection, set to min. required Flash Player version, or 0 (or 0.0.0), for no version detection. 
+            var swfVersionStr = "13.0.0";
+            // To use express install, set to playerProductInstall.swf, otherwise the empty string. 
+            var xiSwfUrlStr = "playerProductInstall.swf";
+            var flashvars = {};
+            var params = {wmode:"direct"};
+            params.quality = "high";
+            params.bgcolor = "#ffffff";
+            params.allowscriptaccess = "sameDomain";
+            params.allowfullscreen = "true";
+            var attributes = {};
+            attributes.id = "Startup";
+            attributes.name = "Startup";
+            attributes.align = "middle";
+            swfobject.embedSWF(
+                "Startup.swf", "flashContent", 
+                "500", "500", 
+                swfVersionStr, xiSwfUrlStr, 
+                flashvars, params, attributes);
+            // JavaScript enabled so display the flashContent div in case it is not replaced with a swf object.
+            swfobject.createCSS("#flashContent", "display:block;text-align:left;");
+    </script>
 </head>
+<div ng-controller="navbarCtrl">
+    <ul>
+      <li ng-class="{active: isActive('/startup')}"><a href="/#!/startup">Game</a></li>
+    </ul>
+</div>
+<div ng-view><div id="flashContent"></div></div>
 <body data-ng-controller="MainCtrl" role="application" class="test-surface">
+
+    <button ng-click="createContestant()" class="btn btn-success" 
+            ng-disabled="
+                ldrbd.contestantName.$error.required || 
+                ldrbd.contestantScore.$error.required
+            "
+    >
+        Submit Score
+    </button>
+
     <div class="ldrbd-widget" role="widget" data-ng-cloak>
         <header role="heading">
             <h1 class="widget-title">Leaderboard</h1>
@@ -47,7 +98,12 @@
 
     <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
     <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.16/angular.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.16/angular-resource.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.16/angular-cookies.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.16/angular-sanitize.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.16/angular-route.js"></script>
+    <script src="/js/angularjs.media.directive.js"></script> 
     <script src="/js/leader-board.js"></script> 
 </body>
 </html>
