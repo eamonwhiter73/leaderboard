@@ -104,14 +104,15 @@ app.controller('navbarCtrl', function($scope, $location) {
 
 app.controller('MainCtrl', function($scope, socket) {
 	$scope.contestants = [];
+	$scope.scores = [];
 	$scope.score;
 
-  socket.emit('listContestants');
+	socket.emit('listContestants');
 
 	// Incoming
-  socket.on('onContestantsListed', function(data) {
-    $scope.contestants.push.apply($scope.contestants, data);
-  });
+	socket.on('onContestantsListed', function(data) {
+	  $scope.contestants.push.apply($scope.contestants, data);
+	});
 
 	socket.on('onContestantCreated', function(data) {
 		$scope.contestants.push(data);
@@ -128,7 +129,7 @@ app.controller('MainCtrl', function($scope, socket) {
 									  .addClass("ng-pristine");
 	};
 
-	socket.on('score', function(data) {
+	socket.on('sendscore', function(data) {
 		console.log(data);
 		$scope.score = data;
 	});
@@ -136,7 +137,9 @@ app.controller('MainCtrl', function($scope, socket) {
 	// Outgoing
 	$scope.createContestant = function() {
 
-		$scope.$digest;
+		socket.emit('score')
+
+		//$scope.$digest;
 
 		//console.log($scope.score[0]);
 

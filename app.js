@@ -5,11 +5,29 @@ var express = require('express'),
 
 app.configure(function() {
     app.use(express.static(__dirname + '/public'));
+    app.set('views', __dirname + '/views');
+});
+
+io.configure(function() {
+  io.set('transports', ['websocket','xhr-polling']);
+  io.set('flash policy port', 10843);
 });
 
 var contestants = [];
+var score;
 
 io.sockets.on('connection', function(socket) {
+
+  /*socket.on('message', function (data) {
+    socket.emit('score', data);
+  });*/
+
+  socket.on('message', function (data) {
+    console.log(data);
+    score = data;
+    console.log("Transfered:" + " " + score);
+    socket.broadcast.emit('sendscore', score);
+  })
 
 	socket.on('listContestants', function(data) {
     socket.emit('onContestantsListed', contestants);
@@ -38,4 +56,4 @@ io.sockets.on('connection', function(socket) {
 	});
 });
 
-server.listen(1337);
+server.listen(8000);
